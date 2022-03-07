@@ -24,7 +24,6 @@ var eventProcessPrimeNumber = make(chan Event)
 
 func main() {
 	 foreverCh := make(chan bool)
-
 	 go func() {
 		  consumer()
 	 }()
@@ -37,16 +36,15 @@ func main() {
 }
 
 func consumer() {
-
 	 for {
 		  select {
 		  case <-eventReadFile:
 				ReadFileImplement()
 		  case data := <-eventProcessPrimeNumber:
+		  	 fmt.Println("getxxx",data)
 				ProcessPrimeNumberImplement(data.Value)
 		  default:
 		  }
-
 	 }
 
 }
@@ -57,10 +55,12 @@ func ReadFileImplement() {
 		  panic(err)
 	 }
 
-	 eventProcessPrimeNumber <- Event{
-		  EventName: EventProcessPrimeNumber,
-		  Value:     r,
-	 }
+	 go func() {
+		  eventProcessPrimeNumber <- Event{
+				EventName: EventProcessPrimeNumber,
+				Value:     r,
+		  }
+	 }()
 }
 
 func ProcessPrimeNumberImplement(data []byte) {
